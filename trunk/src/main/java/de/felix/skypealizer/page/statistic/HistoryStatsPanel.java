@@ -1,5 +1,5 @@
 /**
- * The contents of this file are copyright (c) 2011 by medavis GmbH, Karlsruhe, Germany
+ * 
  */
 package de.felix.skypealizer.page.statistic;
 
