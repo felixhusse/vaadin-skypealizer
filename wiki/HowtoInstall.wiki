@@ -1,0 +1,13 @@
+#summary a step-by-step tutorial how to setup Skype-A-Lizer
+
+= Introduction =
+
+The Skype-A-Lizer is a web application to allow you analyze your Skype chats. Basically the app just connects to your "main.db" database in your Skype profile folder and reads out all chat participants plus their messages. To allow this you need to fulfill certain prerequisites explained in the next paragraph.
+
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
