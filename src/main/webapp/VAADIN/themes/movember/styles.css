@@ -1,0 +1,21 @@
+/* 
+    Document   : stlyes
+    Created on : 25.05.2011, 23:34:04
+    Author     : felixhusse
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/* 
+   TODO customize this sample style
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+@import url(../runo/styles.css);
+
+.skype_touchbutton {
+    /*cursor: pointer;*/
+}
+
+.headerleft {
+    background: coral;
+}
