@@ -6,7 +6,6 @@
 package de.felix.skypealizer;
 
 import de.felix.skypealizer.page.AdminPage;
-import de.felix.skypealizer.page.DragDropPage;
 import de.felix.skypealizer.page.StatsDashboard;
 import de.felix.skypealizer.page.LoginPage;
 import de.felix.skypealizer.page.SkypeChatPage;
@@ -24,7 +23,6 @@ public class SkypeALizerWebApp extends WebApplication {
         registerPages(new Class[] {
                     SkypeChatPage.class,
                     StatsDashboard.class,
-                    DragDropPage.class,
                     LoginPage.class,
                     AdminPage.class
         });

@@ -21,8 +21,6 @@ public abstract class BaseStatsPanel extends Panel {
         this.chartHeight = chartHeight;
         this.chartWidth = chartWidth;
         ((VerticalLayout)this.getContent()).setMargin(false);
-        this.setWidth((chartWidth+50)+"px");
-        this.setHeight((chartHeight+60)+"px");
         
     }
     

@@ -10,6 +10,7 @@ import com.invient.vaadin.charts.Gradient;
 import com.invient.vaadin.charts.Gradient.LinearGradient.LinearColorStop;
 import com.invient.vaadin.charts.InvientCharts;
 import com.invient.vaadin.charts.InvientChartsConfig;
+import com.vaadin.terminal.Sizeable;
 import de.felix.skypealizer.model.skype.SkypeChat;
 import de.felix.skypealizer.model.skype.SkypeMessage;
 import de.felix.skypealizer.model.skype.SkypeUser;
@@ -37,7 +38,6 @@ public class HistoryStatsPanel extends BaseStatsPanel {
     
     @Override
     public void initStats(SkypeChat skypeChat){
-        
         
         LinkedList<SkypeMessage> allMessages = new LinkedList<SkypeMessage>();
         
@@ -116,9 +116,12 @@ public class HistoryStatsPanel extends BaseStatsPanel {
             chart.addSeries(userTimeSeries);
         }
         
-        chart.setStyleName("v-chart-min-width");
+
+        chart.setHeight(chartHeight, Sizeable.UNITS_PIXELS);
+        //chart.setWidth(chartWidth, Sizeable.UNITS_PIXELS);
+
         this.addComponent(chart);
-        chart.setSizeFull();
+        
     }
     
     private InvientCharts.DateTimePoint[] getDateTimeSeriesPoints(InvientCharts.DateTimeSeries series, LinkedList<SkypeMessage> allMessages, DateTime firstMessageTimeStamp, DateTime lastMessageTimeStamp) {

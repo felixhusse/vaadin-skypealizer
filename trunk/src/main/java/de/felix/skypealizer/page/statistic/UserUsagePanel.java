@@ -5,6 +5,7 @@ package de.felix.skypealizer.page.statistic;
 
 import com.invient.vaadin.charts.InvientCharts;
 import com.invient.vaadin.charts.InvientChartsConfig;
+import com.vaadin.terminal.Sizeable;
 import de.felix.skypealizer.model.skype.SkypeChat;
 import de.felix.skypealizer.model.skype.SkypeUser;
 import java.util.LinkedHashSet;
@@ -43,7 +44,7 @@ public class UserUsagePanel extends BaseStatsPanel {
         //
         InvientChartsConfig.PieConfig pieCfg = new InvientChartsConfig.PieConfig();
         pieCfg.setInnerSize(65);
-        pieCfg.setDataLabel(new InvientChartsConfig.PieDataLabel(false));
+        pieCfg.setDataLabel(new InvientChartsConfig.PieDataLabel());
 
         InvientCharts.XYSeries series = new InvientCharts.XYSeries("2008", InvientCharts.SeriesType.PIE, pieCfg);
         LinkedHashSet<InvientCharts.DecimalPoint> points = new LinkedHashSet<InvientCharts.DecimalPoint>();
@@ -55,7 +56,10 @@ public class UserUsagePanel extends BaseStatsPanel {
         series.setSeriesPoints(points);
 
         chart.addSeries(series);
-        chart.setSizeFull();
+
+        chart.setHeight(chartHeight, Sizeable.UNITS_PIXELS);
+        //chart.setWidth(chartWidth, Sizeable.UNITS_PIXELS);
+
         this.addComponent(chart);
     }
     
