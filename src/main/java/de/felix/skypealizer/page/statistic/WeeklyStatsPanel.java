@@ -6,6 +6,7 @@ package de.felix.skypealizer.page.statistic;
 import com.invient.vaadin.charts.Color.RGB;
 import com.invient.vaadin.charts.InvientCharts;
 import com.invient.vaadin.charts.InvientChartsConfig;
+import com.vaadin.terminal.Sizeable;
 import de.felix.skypealizer.model.skype.SkypeChat;
 import de.felix.skypealizer.model.skype.SkypeMessage;
 import de.felix.skypealizer.model.skype.SkypeUser;
@@ -34,7 +35,7 @@ public class WeeklyStatsPanel extends BaseStatsPanel {
     public void initStats(SkypeChat skypeChat){
 
         InvientChartsConfig chartConfig = new InvientChartsConfig();
-        chartConfig.getGeneralChartConfig().setType(InvientCharts.SeriesType.BAR);
+        chartConfig.getGeneralChartConfig().setType(InvientCharts.SeriesType.COLUMN);
 
         chartConfig.getTitle().setText("");
 
@@ -144,7 +145,10 @@ public class WeeklyStatsPanel extends BaseStatsPanel {
         seriesData = new InvientCharts.XYSeries("Saturday");
         seriesData.setSeriesPoints(getPoints(seriesData, dataSaturday));
         chart.addSeries(seriesData);
-        chart.setSizeFull();
+
+        chart.setHeight(chartHeight, Sizeable.UNITS_PIXELS);
+        //chart.setWidth(chartWidth, Sizeable.UNITS_PIXELS);
+
         this.addComponent(chart);
 //        cc.add("Sun", dataSunday);
 //	cc.add("Mon", dataMonday);

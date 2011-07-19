@@ -67,7 +67,7 @@ public class StatsDashboard extends VerticalLayout implements ParamChangeListene
 
     private Panel createMessageLength(SkypeChat skypeChat) {
         MessageLengthStatsPanel msgLenthPanel = new MessageLengthStatsPanel(400, 300, skypeChat);
-        
+        msgLenthPanel.initStats(skypeChat);
         return msgLenthPanel;
     }
 
