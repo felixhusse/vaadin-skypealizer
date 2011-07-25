@@ -161,6 +161,11 @@
       <artifactId>joda-time</artifactId>
       <version>1.6.2</version>
     </dependency>
+    <dependency>
+      <groupId>org.vaadin.addons</groupId>
+      <artifactId>portallayout</artifactId>
+      <version>0.1.1</version>
+    </dependency>
   </dependencies>
   
        <!-- If a new widgetset is added, run 'mvn -Pcompile-widgetset clean package' -->
