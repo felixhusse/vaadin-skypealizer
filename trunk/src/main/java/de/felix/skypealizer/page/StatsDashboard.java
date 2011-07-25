@@ -5,33 +5,29 @@
 
 package de.felix.skypealizer.page;
 
-import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
 import de.felix.skypealizer.SkypeALizerApp;
 import de.felix.skypealizer.SkypeDatabaseHandler;
 import de.felix.skypealizer.exception.SkypeDatabaseException;
 import de.felix.skypealizer.model.skype.SkypeChat;
 import de.felix.skypealizer.model.skype.SkypeDatabase;
-import de.felix.skypealizer.model.skype.SkypeMessage;
-import de.felix.skypealizer.model.skype.SkypeUser;
 import de.felix.skypealizer.page.statistic.HistoryStatsPanel;
 import de.felix.skypealizer.page.statistic.MessageLengthStatsPanel;
 import de.felix.skypealizer.page.statistic.UserUsagePanel;
 import de.felix.skypealizer.page.statistic.WeeklyStatsPanel;
 import java.util.List;
-import org.joda.time.DateTimeConstants;
 import org.vaadin.navigator7.Navigator.NavigationEvent;
 import org.vaadin.navigator7.Page;
 import org.vaadin.navigator7.ParamChangeListener;
 import org.vaadin.navigator7.uri.Param;
+import org.vaadin.sasha.portallayout.PortalLayout;
 
 /**
  *
  * @author felixhusse
  */
 @Page(uriName="dash")
-public class StatsDashboard extends VerticalLayout implements ParamChangeListener {
+public class StatsDashboard extends PortalLayout implements ParamChangeListener {
 
     @Param(pos=0,name="id", required=true)
     private String id;
@@ -109,12 +105,25 @@ public class StatsDashboard extends VerticalLayout implements ParamChangeListene
                     }
                 }
             }
+            Panel userPieChart = createUserPieChart(currentSkypeChat);
+            Panel weeklyChart = createWeeklyChart(currentSkypeChat);
+            Panel historyChart = createHistoryPanel(currentSkypeChat);
+            Panel messageLengthChart = createMessageLength(currentSkypeChat);
 
-            this.addComponent(createUserPieChart(currentSkypeChat));
-            this.addComponent(createWeeklyChart(currentSkypeChat));
-            this.addComponent(createHistoryPanel(currentSkypeChat));
-            this.addComponent(createMessageLength(currentSkypeChat));
+            this.addComponent(userPieChart);
+            this.addComponent(weeklyChart);
+            this.addComponent(historyChart);
+            this.addComponent(messageLengthChart);
 
+            this.setComponentCaption(userPieChart, userPieChart.getCaption());
+            this.setComponentCaption(weeklyChart, weeklyChart.getCaption());
+            this.setComponentCaption(historyChart, historyChart.getCaption());
+            this.setComponentCaption(messageLengthChart, messageLengthChart.getCaption());
+
+            userPieChart.setCaption("");
+            weeklyChart.setCaption("");
+            historyChart.setCaption("");
+            messageLengthChart.setCaption("");
 
         } catch (SkypeDatabaseException ex) {
             ex.printStackTrace();

@@ -5,12 +5,16 @@
 
 package de.felix.skypealizer.page;
 
+import com.google.gwt.user.client.ui.Panel;
+import com.invient.vaadin.charts.InvientChartsConfig.HorzAlign;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.ui.AbstractSelect.Filtering;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Runo;
 import de.felix.skypealizer.SkypeALizerApp;
 import de.felix.skypealizer.SkypeDatabaseHandler;
 import de.felix.skypealizer.exception.SkypeDatabaseException;
@@ -26,6 +30,7 @@ import org.vaadin.navigator7.Navigator.NavigationEvent;
 import org.vaadin.navigator7.Page;
 import org.vaadin.navigator7.ParamChangeListener;
 import org.vaadin.navigator7.uri.Param;
+import org.vaadin.sasha.portallayout.PortalLayout;
 
 /**
  *
@@ -113,7 +118,9 @@ public class SkypeChatPage extends VerticalLayout implements ParamChangeListener
     }
 
     private void loadSkypeChatGrid(SkypeDatabaseHandler skypeDBHandler) throws SkypeDatabaseException {
-        GridLayout gridLayout = new GridLayout();
+        HorizontalLayout portalLayout = new HorizontalLayout();
+        portalLayout.setSizeFull();
+        
 
         LinkedList<SkypeChat> usedSkypeChats = new LinkedList<SkypeChat>();
         //Limit ChatListing to USERSIZE > 2
@@ -125,33 +132,39 @@ public class SkypeChatPage extends VerticalLayout implements ParamChangeListener
             }
         }
 
-        gridLayout.setColumns(3);
-        if (usedSkypeChats.size()%3==0) {
-            gridLayout.setRows(usedSkypeChats.size()/3);
-        }
-        else {
-            gridLayout.setRows((usedSkypeChats.size()/3)+1);
-        }
+        PortalLayout leftLayout = new PortalLayout();
+        PortalLayout centerLayout = new PortalLayout();
+        PortalLayout rightLayout = new PortalLayout();
 
-        int skypeCounter = 0;
-        for (int i = 0; i < gridLayout.getRows(); i++) {
-            if (skypeCounter < usedSkypeChats.size()) {
-                gridLayout.addComponent(new ChatInfoPanel(usedSkypeChats.get(skypeCounter),375,310,skypeDBHandler.getSkypeDatabase().getDbName()), 0, i);
-                skypeCounter++;
-                if (skypeCounter < usedSkypeChats.size()) {
-                    gridLayout.addComponent(new ChatInfoPanel(usedSkypeChats.get(skypeCounter),375,310,skypeDBHandler.getSkypeDatabase().getDbName()), 1, i);
-                    skypeCounter++;
-                    if (skypeCounter < usedSkypeChats.size()) {
-                        gridLayout.addComponent(new ChatInfoPanel(usedSkypeChats.get(skypeCounter),375,310,skypeDBHandler.getSkypeDatabase().getDbName()), 2, i);
-                        skypeCounter++;
-                    }
-                }
+        for (int i = 0; i < usedSkypeChats.size(); i=i+2) {
+            if (i < usedSkypeChats.size()) {
+                ChatInfoPanel chatInfoPanel = new ChatInfoPanel(usedSkypeChats.get(i), 375, 300, skypeDBHandler.getSkypeDatabase().getDbName());
+                leftLayout.addComponent(chatInfoPanel);
+                leftLayout.setComponentCaption(chatInfoPanel, chatInfoPanel.getCaption());
+                chatInfoPanel.setCaption("");
+                chatInfoPanel.setStyleName(Runo.PANEL_LIGHT);
+            }
+            if (i+1 < usedSkypeChats.size()) {
+                ChatInfoPanel chatInfoPanel = new ChatInfoPanel(usedSkypeChats.get(i+1), 375, 300, skypeDBHandler.getSkypeDatabase().getDbName());
+                centerLayout.addComponent(chatInfoPanel);
+                centerLayout.setComponentCaption(chatInfoPanel, chatInfoPanel.getCaption());
+                chatInfoPanel.setCaption("");
+                chatInfoPanel.setStyleName(Runo.PANEL_LIGHT);
+            }
+            if (i+2 < usedSkypeChats.size()) {
+                ChatInfoPanel chatInfoPanel = new ChatInfoPanel(usedSkypeChats.get(i+2), 375, 300, skypeDBHandler.getSkypeDatabase().getDbName());
+                rightLayout.addComponent(chatInfoPanel);
+                rightLayout.setComponentCaption(chatInfoPanel, chatInfoPanel.getCaption());
+                chatInfoPanel.setCaption("");
+                chatInfoPanel.setStyleName(Runo.PANEL_LIGHT);
             }
         }
-
-        gridLayout.setMargin(true);
-        gridLayout.setSpacing(true);
-        this.addComponent(gridLayout);
+        portalLayout.addComponent(leftLayout);
+        portalLayout.addComponent(centerLayout);
+        portalLayout.addComponent(rightLayout);
+        portalLayout.setSpacing(true);
+        portalLayout.setMargin(true);
+        this.addComponent(portalLayout);
     }
 
     @Override
