@@ -6,6 +6,8 @@
 package de.felix.skypealizer.page;
 
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.ProgressIndicator;
+import com.vaadin.ui.Window;
 import de.felix.skypealizer.SkypeALizerApp;
 import de.felix.skypealizer.SkypeDatabaseHandler;
 import de.felix.skypealizer.exception.SkypeDatabaseException;
@@ -36,6 +38,11 @@ public class StatsDashboard extends PortalLayout implements ParamChangeListener 
     private String db;
 
     private SkypeChat skypeChat;
+    
+    private ProgressIndicator progressIndicator;
+    private Window progressDialog;
+    private SkypeDatabaseHandler currentSkypeDBHandler = null;
+    private List<SkypeDatabase> skypeDbs;
 
     public StatsDashboard() {
         
@@ -67,68 +74,94 @@ public class StatsDashboard extends PortalLayout implements ParamChangeListener 
         return msgLenthPanel;
     }
 
-    @Override
     public void paramChanged(NavigationEvent navigationEvent) {
-        try {
-            SkypeDatabaseHandler currentSkypeDBHandler = null;
-            List<SkypeDatabaseHandler> skypeHandlers = ((SkypeALizerApp)SkypeALizerApp.getCurrent()).getDBHandlers();
-
-            for (SkypeDatabaseHandler skypeHandler : skypeHandlers) {
-                if (skypeHandler.getSkypeDatabase().getDbName().equals(db)) {
-                    currentSkypeDBHandler = skypeHandler;
-                    break;
-                }
-
-            }
-            SkypeChat currentSkypeChat = null;
-            if (currentSkypeDBHandler == null) {
-                List<SkypeDatabase> skypeDbs = ((SkypeALizerApp)SkypeALizerApp.getCurrent()).getAppConfig().getSkypeDatabases();
-                for (SkypeDatabase skypeDB : skypeDbs) {
-                    if (skypeDB.getDbName().equals(db)) {
-                        currentSkypeDBHandler = new SkypeDatabaseHandler(skypeDB);
-                        currentSkypeDBHandler.loadSkypeChats();
-                        for (SkypeChat skypeChat : currentSkypeDBHandler.getSkypeDatabase().getSkypeChats()) {
-                            if (skypeChat.getConvoId().equals(id)) {
-                                currentSkypeChat = currentSkypeDBHandler.loadSkypeChat(skypeChat);
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                }
-            }
-            else {
-                for (SkypeChat skypeChat : currentSkypeDBHandler.getSkypeDatabase().getSkypeChats()) {
-                    if (skypeChat.getConvoId().equals(id)) {
-                        currentSkypeChat = currentSkypeDBHandler.loadSkypeChat(skypeChat);
-                        break;
-                    }
-                }
-            }
-            Panel userPieChart = createUserPieChart(currentSkypeChat);
-            Panel weeklyChart = createWeeklyChart(currentSkypeChat);
-            Panel historyChart = createHistoryPanel(currentSkypeChat);
-            Panel messageLengthChart = createMessageLength(currentSkypeChat);
-
-            this.addComponent(userPieChart);
-            this.addComponent(weeklyChart);
-            this.addComponent(historyChart);
-            this.addComponent(messageLengthChart);
-
-            this.setComponentCaption(userPieChart, userPieChart.getCaption());
-            this.setComponentCaption(weeklyChart, weeklyChart.getCaption());
-            this.setComponentCaption(historyChart, historyChart.getCaption());
-            this.setComponentCaption(messageLengthChart, messageLengthChart.getCaption());
-
-            userPieChart.setCaption("");
-            weeklyChart.setCaption("");
-            historyChart.setCaption("");
-            messageLengthChart.setCaption("");
-
-        } catch (SkypeDatabaseException ex) {
-            ex.printStackTrace();
-        }
+        progressDialog = new Window("Loading Data...");
+        progressDialog.setModal(true);
+        progressDialog.setClosable(false);
         
+        progressIndicator = new ProgressIndicator();
+        progressIndicator.setIndeterminate(false);
+        progressIndicator.setEnabled(true);
+        progressIndicator.setValue(0f);
+        progressDialog.addComponent(progressIndicator);
+        
+        List<SkypeDatabaseHandler> skypeHandlers = ((SkypeALizerApp)SkypeALizerApp.getCurrent()).getDBHandlers();
+
+        for (SkypeDatabaseHandler skypeHandler : skypeHandlers) {
+            if (skypeHandler.getSkypeDatabase().getDbName().equals(db)) {
+                currentSkypeDBHandler = skypeHandler;
+                break;
+            }
+        }
+        skypeDbs = ((SkypeALizerApp)SkypeALizerApp.getCurrent()).getAppConfig().getSkypeDatabases();
+        
+        this.getWindow().addWindow(progressDialog);    
+        LoadDataWorker worker = new LoadDataWorker();
+        worker.start();
+        
+    }
+    
+    public void processed(float status) {
+        progressIndicator.setValue(status);
+        if (status == 1f) {
+            progressIndicator.setEnabled(false);
+            this.getWindow().removeWindow(progressDialog);
+        }
+    }
+    
+    public class LoadDataWorker extends Thread {
+
+        @Override
+        public void run() {
+            try {
+                SkypeChat currentSkypeChat = null;
+                if (currentSkypeDBHandler == null) {
+                    for (SkypeDatabase skypeDB : skypeDbs) {
+                        if (skypeDB.getDbName().equals(db)) {
+                            currentSkypeDBHandler = new SkypeDatabaseHandler(skypeDB);
+                            currentSkypeDBHandler.loadSkypeChats();
+                            for (SkypeChat skypeChat : currentSkypeDBHandler.getSkypeDatabase().getSkypeChats()) {
+                                if (skypeChat.getConvoId().equals(id)) {
+                                    currentSkypeChat = currentSkypeDBHandler.loadSkypeChat(skypeChat);
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+                else {
+                    for (SkypeChat skypeChat : currentSkypeDBHandler.getSkypeDatabase().getSkypeChats()) {
+                        if (skypeChat.getConvoId().equals(id)) {
+                            currentSkypeChat = currentSkypeDBHandler.loadSkypeChat(skypeChat);
+                            break;
+                        }
+                    }
+                    synchronized (getApplication()) {
+                        processed(0.2f);
+                    }
+                }
+
+                StatsDashboard.this.addComponent(createUserPieChart(currentSkypeChat));
+                synchronized (getApplication()) {
+                    processed(0.4f);
+                }
+                StatsDashboard.this.addComponent(createWeeklyChart(currentSkypeChat));
+                synchronized (getApplication()) {
+                    processed(0.6f);
+                }
+                StatsDashboard.this.addComponent(createHistoryPanel(currentSkypeChat));
+                synchronized (getApplication()) {
+                    processed(0.8f);
+                }
+                StatsDashboard.this.addComponent(createMessageLength(currentSkypeChat));
+                synchronized (getApplication()) {
+                    processed(1f);
+                }
+            } catch (SkypeDatabaseException ex) {
+                ex.printStackTrace();
+            }    
+        }   
     }
 
 }
