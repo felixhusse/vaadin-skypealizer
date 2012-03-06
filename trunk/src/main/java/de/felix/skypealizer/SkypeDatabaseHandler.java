@@ -96,6 +96,11 @@ public class SkypeDatabaseHandler {
 
     public SkypeChat loadSkypeChat(SkypeChat skypeChat) throws SkypeDatabaseException {
         try {
+            
+            if (connection==null || connection.isClosed()) {
+                loadSkypeDatabase();
+            }
+            
             for (SkypeUser skypeUser : skypeChat.getSkypeUsers()) {
                 String messageQuery = "SELECT * FROM messages WHERE convo_id=" + skypeChat.getConvoId()+" AND author='"+skypeUser.getUserId()+"';";
                 Statement stmtMessages = connection.createStatement();
