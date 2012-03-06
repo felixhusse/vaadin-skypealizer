@@ -15,6 +15,8 @@
  */
 package de.felix.skypealizer;
 
+import com.vaadin.Application;
+import de.felix.skypealizer.exception.SkypeDatabaseException;
 import de.felix.skypealizer.model.AppConfig;
 import de.felix.skypealizer.model.skype.SkypeDatabase;
 import de.felix.skypealizer.util.ConfigUtil;
@@ -139,7 +141,28 @@ public class SkypeALizerApp extends NavigableApplication {
         if (currentUser.isAuthenticated()) {
             currentUser.logout();
         }
+        for(SkypeDatabaseHandler handler : skypeDBHandlers) {
+            try {
+                handler.closeSkypeDatabaseConnection();
+            } catch (SkypeDatabaseException ex) {
+                Logger.getLogger(SkypeALizerApp.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
+
+    @Override
+    public void transactionEnd(Application application, Object transactionData) {
+        super.transactionEnd(application, transactionData);
+        for(SkypeDatabaseHandler handler : skypeDBHandlers) {
+            try {
+                handler.closeSkypeDatabaseConnection();
+            } catch (SkypeDatabaseException ex) {
+                Logger.getLogger(SkypeALizerApp.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    
 
     @Override
     public NavigableAppLevelWindow createNewNavigableAppLevelWindow() {

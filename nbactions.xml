@@ -14,4 +14,14 @@
                 <goal>jetty:stop</goal>
             </goals>
         </action>
+        <action>
+            <actionName>CUSTOM-jetty-offline</actionName>
+            <displayName>jetty-offline</displayName>
+            <goals>
+                <goal>package</goal>
+            </goals>
+            <activatedProfiles>
+                <activatedProfile>jetty-offline</activatedProfile>
+            </activatedProfiles>
+        </action>
     </actions>
